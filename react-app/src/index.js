@@ -5,28 +5,44 @@ import App from './components/App';
 import registerServiceWorker from './registerServiceWorker';
 
 import ReactDOMServer from 'react-dom/server';
+import { StaticRouter, Route, BrowserRouter } from 'react-router-dom'
 
-//const React = require('react');
-//const ReactDOM = require('react-dom');
-//const ReactDOMServer = require('react-dom/server');
-//const App = require('./components/App');
+const Home = props =>
+  <App />
 
-//ReactDOM.render(<App />, document.getElementById('root'));
-//registerServiceWorker();
+const Hello = props =>
+  <div>Hello</div>
 
-// Getting there...
-// https://jaketrent.com/post/react-routing-static-site-browser/
+const routes = (
+  <div>
+    <Route exact path="/" component={Home} />
+    <Route exact path="/hello" component={Hello} />
+  </div>
+)
 
-if (typeof global.document !== 'undefined') {
-  ReactDOM.render(<App />, document.getElementById('root'));
-  registerServiceWorker();
-}
+const Html = props =>
+  <html>
+    <head><title>My Static Site</title></head>
+    <body>
+      <div id="app">
+        {props.children}
+      </div>
+      <script src="/index.js"></script>
+    </body>
+  </html>
 
 export default locals =>
   ReactDOMServer.renderToString(
-    <html>
-      <div>
-        <h1>{locals.path}</h1>
-      </div>
-    </html>
+    <StaticRouter location={locals.path} context={{}}>
+      <Html>
+      {routes}
+      </Html>
+    </StaticRouter>
   )
+
+if (typeof document !== 'undefined') {
+  ReactDOM.render(
+    <BrowserRouter>{routes}</BrowserRouter>,
+    document.getElementById('root')
+  )
+}
